@@ -76,14 +76,38 @@ class _TripTrackAppState extends State<TripTrackApp> {
             ),
             Flexible(
               flex: 1,
-              child: Container(
-                child: Text("Buttons"),
-                color: Colors.red,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ActionButton(onPressed: () {}, icon: Icon(Icons.fast_rewind)),
+                  ActionButton(onPressed: () {}, icon: Icon(Icons.check)),
+                  ActionButton(
+                      onPressed: () {}, icon: Icon(Icons.fast_forward)),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class ActionButton extends StatelessWidget {
+  final void Function() onPressed;
+  final Icon icon;
+
+  const ActionButton({
+    super.key,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filled(
+      onPressed: onPressed,
+      icon: icon,
     );
   }
 }
