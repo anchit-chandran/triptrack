@@ -50,8 +50,13 @@ class _TripTrackAppState extends State<TripTrackApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black87,
       appBar: AppBar(
-        title: Text('Trip Track'),
+        backgroundColor: Colors.black87,
+        title: Text('Trip Track',
+            style: TextStyle(
+              color: Colors.white,
+            )),
       ),
       body: Center(
         child: Column(
@@ -90,8 +95,6 @@ class TimerContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       padding: EdgeInsets.only(
         top: 20,
@@ -103,9 +106,39 @@ class TimerContainer extends StatelessWidget {
           TimerLabel(),
           Timer(
             time: "01:00:00",
+          ),
+          TripLocation(
+            location: "Come Up",
           )
         ],
       ),
+    );
+  }
+}
+
+class TripLocation extends StatelessWidget {
+  final String location;
+  const TripLocation({
+    super.key,
+    required this.location,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Center(
+            child: Text(location,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white70,
+                )),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -127,6 +160,7 @@ class Timer extends StatelessWidget {
             style: TextStyle(
               fontSize: 38,
               letterSpacing: 10.0,
+              color: Colors.white,
             ))
       ],
     );
@@ -147,7 +181,7 @@ class TimerLabel extends StatelessWidget {
           "hh : mm : ss",
           style: TextStyle(
             letterSpacing: 10.0,
-            color: Colors.grey[600],
+            color: Colors.grey[500],
           ),
         ),
       ],
@@ -170,7 +204,9 @@ class SubstanceAvatar extends StatelessWidget {
       height: 80.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(),
+        border: Border.all(
+          color: Colors.white,
+        ),
       ),
       child: Center(
         child: Text(
