@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
@@ -47,6 +50,55 @@ class TripTrackApp extends StatefulWidget {
 }
 
 class _TripTrackAppState extends State<TripTrackApp> {
+  Duration duration = Duration();
+  Timer? timer;
+  bool timerStarted = false;
+
+  void toggleTimer() {
+    // cancel current timer
+    timer?.cancel();
+
+    if (!timerStarted) {
+      print('Starting timer');
+      timer = Timer.periodic(Duration(seconds: 1), (_) => addTime());
+    } else {
+      print("Pausing timer");
+    }
+
+    // flip timerStarted state
+    setState(() {
+      timerStarted = !timerStarted;
+    });
+  }
+
+  void stopTimer() {
+    print("Stopping timer");
+    timer?.cancel();
+    setState(() {
+      timerStarted = false;
+      duration = Duration.zero;
+    });
+  }
+
+  void addTime() {
+    const addSeconds = 1;
+
+    setState(() {
+      final seconds = duration.inSeconds + addSeconds;
+      duration = Duration(seconds: seconds);
+    });
+  }
+
+  String durationToString(Duration duration) {
+    String hours = duration.inHours.remainder(60).toString().padLeft(2, '0');
+    String minutes =
+        duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    String seconds =
+        duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+
+    return "$hours:$minutes:$seconds";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +122,9 @@ class _TripTrackAppState extends State<TripTrackApp> {
                   SubstanceAvatar(
                     avatar: "💊",
                   ),
-                  TimerContainer()
+                  TimerContainer(
+                    tripDuration: durationToString(duration),
+                  ),
                 ]),
               ),
             ),
@@ -80,9 +134,23 @@ class _TripTrackAppState extends State<TripTrackApp> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ActionButton(onPressed: () {}, icon: Icon(Icons.fast_rewind)),
-                  ActionButton(onPressed: () {}, icon: Icon(Icons.check)),
                   ActionButton(
-                      onPressed: () {}, icon: Icon(Icons.fast_forward)),
+                      onPressed: () {
+                        print("Starting timer");
+                        toggleTimer();
+                      },
+                      icon:
+                          Icon(timerStarted ? Icons.pause : Icons.play_arrow)),
+                  if (duration.inSeconds > 0)
+                    ActionButton(
+                        onPressed: () {
+                          stopTimer();
+                        },
+                        icon: Icon(Icons.stop)),
+                  ActionButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.fast_forward),
+                  ),
                 ],
               ),
             ),
@@ -115,7 +183,10 @@ class ActionButton extends StatelessWidget {
 class TimerContainer extends StatelessWidget {
   const TimerContainer({
     super.key,
+    required this.tripDuration,
   });
+
+  final String tripDuration;
 
   @override
   Widget build(BuildContext context) {
@@ -128,8 +199,8 @@ class TimerContainer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           TimerLabel(),
-          Timer(
-            time: "01:00:00",
+          TimerText(
+            time: tripDuration,
           ),
           TripLocation(
             location: "Come Up",
@@ -167,10 +238,10 @@ class TripLocation extends StatelessWidget {
   }
 }
 
-class Timer extends StatelessWidget {
+class TimerText extends StatelessWidget {
   final String time;
 
-  const Timer({
+  const TimerText({
     super.key,
     required this.time,
   });
