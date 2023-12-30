@@ -193,13 +193,14 @@ class _ActionButtonsContainerState extends State<ActionButtonsContainer> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ActionButton(onPressed: () {}, icon: Icon(Icons.fast_rewind)),
           ActionButton(
-              onPressed: () {
-                print("Starting timer");
-                widget.toggleTimer();
-              },
-              icon: Icon(widget.timerStarted ? Icons.pause : Icons.play_arrow)),
+            onPressed: () {
+              print("Starting timer");
+              widget.toggleTimer();
+            },
+            icon: Icon(widget.timerStarted ? Icons.pause : Icons.play_arrow),
+            color: widget.timerStarted ? Colors.purple : Colors.green,
+          ),
           if (widget.duration.inSeconds > 0)
             ActionButton(
                 onPressed: () {
@@ -207,10 +208,6 @@ class _ActionButtonsContainerState extends State<ActionButtonsContainer> {
                   widget.confirmStopTrip(context);
                 },
                 icon: Icon(Icons.stop)),
-          ActionButton(
-            onPressed: () {},
-            icon: Icon(Icons.fast_forward),
-          ),
         ],
       ),
     );
@@ -220,18 +217,27 @@ class _ActionButtonsContainerState extends State<ActionButtonsContainer> {
 class ActionButton extends StatelessWidget {
   final void Function() onPressed;
   final Icon icon;
+  final Color color;
 
   const ActionButton({
     super.key,
     required this.onPressed,
     required this.icon,
+    this.color = Colors.red,
   });
 
   @override
   Widget build(BuildContext context) {
-    return IconButton.filled(
-      onPressed: onPressed,
-      icon: icon,
+    return Ink(
+      decoration: ShapeDecoration(
+        color: color,
+        shape: CircleBorder(),
+      ),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: icon,
+        color: Colors.white,
+      ),
     );
   }
 }
