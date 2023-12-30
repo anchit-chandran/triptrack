@@ -97,6 +97,36 @@ class _TripTrackAppState extends State<TripTrackApp> {
     return "$hours:$minutes:$seconds";
   }
 
+  Future<dynamic> confirmStopTrip(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Cancel trip?"),
+              elevation: 24.0,
+              content: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                    "Are you sure you want to end the trip? The timer will be stopped."),
+              ),
+              contentPadding: EdgeInsets.all(6.0),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      print("Ending timer");
+                      stopTimer();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("End trip")),
+                TextButton(
+                    onPressed: () {
+                      print("Continuing timer");
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Continue")),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,73 +145,73 @@ class _TripTrackAppState extends State<TripTrackApp> {
           children: [
             Flexible(
               flex: 2,
-              child: Container(
-                child: Column(children: [
-                  SubstanceAvatar(
-                    avatar: "💊",
-                  ),
-                  TimerContainer(
-                    tripDuration: durationToString(duration),
-                  ),
-                ]),
-              ),
+              child: Column(children: [
+                SubstanceAvatar(
+                  avatar: "💊",
+                ),
+                TimerContainer(
+                  tripDuration: durationToString(duration),
+                ),
+              ]),
             ),
-            Flexible(
-              flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ActionButton(onPressed: () {}, icon: Icon(Icons.fast_rewind)),
-                  ActionButton(
-                      onPressed: () {
-                        print("Starting timer");
-                        toggleTimer();
-                      },
-                      icon:
-                          Icon(timerStarted ? Icons.pause : Icons.play_arrow)),
-                  if (duration.inSeconds > 0)
-                    ActionButton(
-                        onPressed: () {
-                          // Confirm cancel trip
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                    title: Text("Cancel trip?"),
-                                    elevation: 24.0,
-                                    content: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20),
-                                      child: Text(
-                                          "Are you sure you want to end the trip? The timer will be stopped."),
-                                    ),
-                                    contentPadding: EdgeInsets.all(6.0),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            print("Ending timer");
-                                            stopTimer();
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text("End trip")),
-                                      TextButton(
-                                          onPressed: () {
-                                            print("Continuing timer");
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text("Continue")),
-                                    ],
-                                  ));
-                        },
-                        icon: Icon(Icons.stop)),
-                  ActionButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.fast_forward),
-                  ),
-                ],
-              ),
-            ),
+            ActionButtonsContainer(
+              toggleTimer: toggleTimer,
+              timerStarted: timerStarted,
+              duration: duration,
+              confirmStopTrip: confirmStopTrip,
+            )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ActionButtonsContainer extends StatefulWidget {
+  final VoidCallback toggleTimer;
+  final bool timerStarted;
+  final Duration duration;
+  final Future<dynamic> Function(BuildContext) confirmStopTrip;
+
+  const ActionButtonsContainer({
+    super.key,
+    required this.toggleTimer,
+    required this.timerStarted,
+    required this.duration,
+    required this.confirmStopTrip,
+  });
+
+  @override
+  State<ActionButtonsContainer> createState() => _ActionButtonsContainerState();
+}
+
+class _ActionButtonsContainerState extends State<ActionButtonsContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      flex: 1,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ActionButton(onPressed: () {}, icon: Icon(Icons.fast_rewind)),
+          ActionButton(
+              onPressed: () {
+                print("Starting timer");
+                widget.toggleTimer();
+              },
+              icon: Icon(widget.timerStarted ? Icons.pause : Icons.play_arrow)),
+          if (widget.duration.inSeconds > 0)
+            ActionButton(
+                onPressed: () {
+                  // Confirm cancel trip
+                  widget.confirmStopTrip(context);
+                },
+                icon: Icon(Icons.stop)),
+          ActionButton(
+            onPressed: () {},
+            icon: Icon(Icons.fast_forward),
+          ),
+        ],
       ),
     );
   }
