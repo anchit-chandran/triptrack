@@ -73,6 +73,7 @@ class _TripTrackAppState extends State<TripTrackApp> {
 
   void stopTimer() {
     print("Stopping timer");
+
     timer?.cancel();
     setState(() {
       timerStarted = false;
@@ -144,7 +145,35 @@ class _TripTrackAppState extends State<TripTrackApp> {
                   if (duration.inSeconds > 0)
                     ActionButton(
                         onPressed: () {
-                          stopTimer();
+                          // Confirm cancel trip
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: Text("Cancel trip?"),
+                                    elevation: 24.0,
+                                    content: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: Text(
+                                          "Are you sure you want to end the trip? The timer will be stopped."),
+                                    ),
+                                    contentPadding: EdgeInsets.all(6.0),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            print("Ending timer");
+                                            stopTimer();
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("End trip")),
+                                      TextButton(
+                                          onPressed: () {
+                                            print("Continuing timer");
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("Continue")),
+                                    ],
+                                  ));
                         },
                         icon: Icon(Icons.stop)),
                   ActionButton(
