@@ -1,6 +1,6 @@
 # triptrack
 
-A new Flutter project.
+![Alt text](firstFlutter.gif)
 
 ## Getting Started
 
