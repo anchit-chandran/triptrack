@@ -10,6 +10,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
+      backgroundColor: Colors.black87,
       body: Center(
         child: ElevatedButton(
           onPressed: () {

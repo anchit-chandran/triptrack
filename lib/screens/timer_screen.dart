@@ -15,16 +15,69 @@ class _TimerScreenState extends State<TimerScreen> {
   Duration duration = Duration();
   Timer? timer;
   bool timerStarted = false;
+  String tripLocation = "Come Up";
+  Color backgroundColor = Colors.black87;
+
+  Color calculateBackgroundColor(int durationMins) {
+    Color baseColor = Colors.black87;
+    Color peakColor = Color.fromARGB(255, 131, 26, 129);
+    Color newBackgroundColor = baseColor;
+
+    int endComeup = 45;
+    int endPeak = 180;
+    int endTrip = endPeak + 30;
+
+    if (durationMins < endComeup) {
+      double t = durationMins / 60;
+      newBackgroundColor = Color.lerp(baseColor, peakColor, t)!;
+    } else if (durationMins >= endComeup && durationMins < endPeak) {
+      newBackgroundColor = peakColor;
+    } else if (durationMins >= endPeak && durationMins < endTrip) {
+      double t = (endTrip - durationMins) / (endTrip - endPeak);
+      newBackgroundColor = Color.lerp(baseColor, peakColor, t)!;
+    } else {
+      newBackgroundColor = baseColor;
+    }
+    return newBackgroundColor;
+  }
+
+  void updateTripLocation({required Duration currentDuration}) {
+    String newTripLocation = "";
+
+    int durationMins = currentDuration.inMinutes;
+
+    if (durationMins < 45) {
+      newTripLocation = "Come Up";
+    } else if (durationMins >= 45 && durationMins < 180) {
+      newTripLocation = "Peak";
+    } else {
+      newTripLocation = "Come Down";
+    }
+
+    setState(() {
+      tripLocation = newTripLocation;
+    });
+  }
+
+  void updateBackgroundColor() {
+    Color newBackgroundColor = calculateBackgroundColor(duration.inMinutes);
+    setState(() {
+      print(
+          "Updating background color from $backgroundColor to $newBackgroundColor");
+      backgroundColor = newBackgroundColor;
+    });
+  }
 
   void toggleTimer() {
     // cancel current timer
     timer?.cancel();
 
     if (!timerStarted) {
-      print('Starting timer');
-      timer = Timer.periodic(Duration(seconds: 1), (_) => addTime());
-    } else {
-      print("Pausing timer");
+      timer = Timer.periodic(Duration(seconds: 1), (_) {
+        addTime();
+        updateTripLocation(currentDuration: duration);
+        updateBackgroundColor();
+      });
     }
 
     // flip timerStarted state
@@ -34,17 +87,17 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void stopTimer() {
-    print("Stopping timer");
-
     timer?.cancel();
     setState(() {
       timerStarted = false;
       duration = Duration.zero;
+      updateTripLocation(currentDuration: duration);
+      updateBackgroundColor();
     });
   }
 
   void addTime() {
-    const addSeconds = 1;
+    const addSeconds = 1 * 60 * 10;
 
     setState(() {
       final seconds = duration.inSeconds + addSeconds;
@@ -77,7 +130,6 @@ class _TimerScreenState extends State<TimerScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    print("Ending timer");
                     stopTimer();
                     Navigator.of(context).pop();
                   },
@@ -90,7 +142,6 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    print("Continuing timer");
                     Navigator.of(context).pop();
                   },
                   child: Text(
@@ -106,8 +157,10 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Building TimerScreen widget with $backgroundColor");
     return CustomScaffold(
       appBarTitle: "Have a good trip ☀️",
+      backgroundColor: backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -121,6 +174,7 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
                 TimerContainer(
                   tripDuration: durationToString(duration),
+                  tripLocation: tripLocation,
                 ),
               ]),
             ),
@@ -213,12 +267,14 @@ class ActionButton extends StatelessWidget {
 }
 
 class TimerContainer extends StatelessWidget {
+  final String tripDuration;
+  final String tripLocation;
+
   const TimerContainer({
     super.key,
     required this.tripDuration,
+    required this.tripLocation,
   });
-
-  final String tripDuration;
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +291,7 @@ class TimerContainer extends StatelessWidget {
             time: tripDuration,
           ),
           TripLocation(
-            location: "Come Up",
+            location: tripLocation,
           )
         ],
       ),
