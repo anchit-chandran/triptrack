@@ -111,18 +111,30 @@ class _TripTrackAppState extends State<TripTrackApp> {
               contentPadding: EdgeInsets.all(6.0),
               actions: [
                 TextButton(
-                    onPressed: () {
-                      print("Ending timer");
-                      stopTimer();
-                      Navigator.of(context).pop();
-                    },
-                    child: Text("End trip")),
+                  onPressed: () {
+                    print("Ending timer");
+                    stopTimer();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "End trip",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 244, 106, 101),
+                    ),
+                  ),
+                ),
                 TextButton(
-                    onPressed: () {
-                      print("Continuing timer");
-                      Navigator.of(context).pop();
-                    },
-                    child: Text("Continue")),
+                  onPressed: () {
+                    print("Continuing timer");
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Continue",
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 15, 78, 130),
+                    ),
+                  ),
+                ),
               ],
             ));
   }
