@@ -15,10 +15,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Trip Track',
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 183, 22, 7)),
-        useMaterial3: true,
-      ),
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 183, 22, 7)),
+          useMaterial3: true,
+          appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+          )),
       home: HomeScreen(),
     );
   }
