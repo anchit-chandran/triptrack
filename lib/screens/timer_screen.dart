@@ -5,7 +5,12 @@ import 'dart:async';
 import 'package:triptrack/screens/custom_scaffold.dart';
 
 class TimerScreen extends StatefulWidget {
-  const TimerScreen({super.key});
+  final String selectedSubstance;
+
+  const TimerScreen({
+    super.key,
+    required this.selectedSubstance,
+  });
 
   @override
   State<TimerScreen> createState() => _TimerScreenState();
@@ -62,8 +67,6 @@ class _TimerScreenState extends State<TimerScreen> {
   void updateBackgroundColor() {
     Color newBackgroundColor = calculateBackgroundColor(duration.inMinutes);
     setState(() {
-      print(
-          "Updating background color from $backgroundColor to $newBackgroundColor");
       backgroundColor = newBackgroundColor;
     });
   }
@@ -131,6 +134,7 @@ class _TimerScreenState extends State<TimerScreen> {
                 TextButton(
                   onPressed: () {
                     stopTimer();
+                    print('Running end trip inside timer_screen');
                     Navigator.of(context).pop();
                   },
                   child: Text(
@@ -155,12 +159,23 @@ class _TimerScreenState extends State<TimerScreen> {
             ));
   }
 
+  void onBackButtonPressCleanup(BuildContext context) {
+    if (duration.inSeconds > 0) {
+      // Need to clean up timer
+      print('Cleaning timer');
+      confirmStopTrip(context);
+    } else {
+      print('Nothing to clean');
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("Building TimerScreen widget with $backgroundColor");
     return CustomScaffold(
       appBarTitle: "Have a good trip ☀️",
       backgroundColor: backgroundColor,
+      customBackButtonCleanUp: () => onBackButtonPressCleanup(context),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +185,7 @@ class _TimerScreenState extends State<TimerScreen> {
               flex: 2,
               child: Column(children: [
                 SubstanceAvatar(
-                  avatar: "💊",
+                  avatar: widget.selectedSubstance,
                 ),
                 TimerContainer(
                   tripDuration: durationToString(duration),
