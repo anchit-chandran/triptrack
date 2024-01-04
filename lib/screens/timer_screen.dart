@@ -100,7 +100,7 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void addTime() {
-    const addSeconds = 1 * 60 * 10;
+    const addSeconds = 1 * 60 * 15;
 
     setState(() {
       final seconds = duration.inSeconds + addSeconds;
