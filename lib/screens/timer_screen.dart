@@ -20,7 +20,7 @@ class _TimerScreenState extends State<TimerScreen> {
   Duration duration = Duration();
   Timer? timer;
   bool timerStarted = false;
-  String tripLocation = "Come Up";
+  String tripLocation = "";
   Color backgroundColor = Colors.black87;
 
   Color calculateBackgroundColor(int durationMins) {
